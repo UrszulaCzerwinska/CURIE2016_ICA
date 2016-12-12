@@ -3,6 +3,9 @@
 *.RData
 *.Ruserdata
 *.Rproj
+<<<<<<< HEAD
 *.Rproj.user
 *.RDataTmp
 *.DS_Store
+=======
+>>>>>>> f708e777d5555ecc30b6e382db98250b98f4d9d3
