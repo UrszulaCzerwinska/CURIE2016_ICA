@@ -591,7 +591,7 @@ rep="test_rnk/"
   1:ncol(S),
   function(x) write.table(
   data.frame(HUGO, S[, x]),
-  file = paste(rep, colnames(S)[x], ".rnk", sep = ""),
+  file = paste(path_global,rep, colnames(S)[x], ".rnk", sep = ""),
   quote = FALSE,
   col.names = FALSE,
   row.names = FALSE
@@ -601,4 +601,8 @@ rep="test_rnk/"
   
 ```
 
+
+```{r}
+paste(path_global,rep, colnames(S)[1], ".rnk", sep = "")
+```
 
