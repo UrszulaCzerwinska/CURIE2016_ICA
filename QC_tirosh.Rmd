@@ -258,8 +258,8 @@ return(df.scaled.t)
   
 
 
-nk.ica=matrix_del_rows_scaled(nk,nk.corr,path="/Users/urszulaczerwinska/Documents/CURIE2015/Data/single.cell.melanoma/Average_Profiles/ICA_tirosh_subsets/")
-dim(nk.ica)
+#nk.ica=matrix_del_rows_scaled(nk,nk.corr,path="/Users/urszulaczerwinska/Documents/CURIE2015/Data/single.cell.melanoma/Average_Profiles/ICA_tirosh_subsets/")
+#dim(nk.ica)
 ```
 
 ```{r doICABatch}
@@ -436,7 +436,7 @@ return(get(name.doica))
 ```
 
 ```{r change names}
-vector.of.names=rownames(S)
+#vector.of.names=rownames(S)
 
 change_to_hugo_official <- function(vector.of.names) {
   rownames.test <- vector.of.names
@@ -469,6 +469,7 @@ change_to_hugo_official <- function(vector.of.names) {
 #example 
 #nk.doica=repair("nk.ica", path_global, ncomp=6, "CORRELATION_LOCAL_MAX")
 ##########
+
 
 
 repair <- function(name, path_global, ncomp, corr_folder="CORRELATION") {
@@ -552,4 +553,52 @@ return(list(S.df.neg,S.df.pos))
 #S_pos_neg_nk=split_ic_pos_neg(nk.doica, corr_folder="CORRELTION_POS_NEG")
 
 ```
+
+```{r generate .rnk files}
+generate_rnk_files_for_gsea <- function (df, pos_neg = FALSE, rep) {
+  name <- deparse(substitute(df))
+  HUGO <- df[[3]]
+  S <- df[[2]]
+  if (pos_neg == FALSE) {
+  apply(
+  1:ncol(S),
+  2,
+  function(x) write.table(
+  data.frame(HUGO, S[, x]),
+  file = paste(rep, colnames(S)[x], "/", sep = ""),
+  quote = FALSE,
+  col.names = FALSE,
+  row.names = FALSE
+  )
+  )
+  } else {
+  
+  }
+  
+}
+```
+
+```{r}
+setwd(path_global)
+df=nk.doica
+name <- deparse(substitute(df))
+rep="test_rnk/"
+  dir.create("test_rnk/")  
+
+  HUGO <- df[[3]]
+  S <- df[[2]]
+  sapply(
+  1:ncol(S),
+  function(x) write.table(
+  data.frame(HUGO, S[, x]),
+  file = paste(rep, colnames(S)[x], ".rnk", sep = ""),
+  quote = FALSE,
+  col.names = FALSE,
+  row.names = FALSE
+  )
+  )
+
+  
+```
+
 
