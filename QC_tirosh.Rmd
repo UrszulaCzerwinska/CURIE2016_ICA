@@ -263,9 +263,9 @@ return(df.scaled.t)
 ```
 
 ```{r doICABatch}
-path_global="/Users/urszulaczerwinska/Documents/CURIE2015/Data/single.cell.melanoma/Average_Profiles/ICA_tirosh_subsets/nk.ica_stability_2_25/"
-name="nk.ica_stability_2_25"
-vec=seq(2,25,1)
+# path_global="/Users/urszulaczerwinska/Documents/CURIE2015/Data/single.cell.melanoma/Average_Profiles/ICA_tirosh_subsets/nk.ica_stability_2_25/"
+# name="nk.ica_stability_2_25"
+# vec=seq(2,25,1)
 
 doICABatch <- function(df.scaled.t, vec, path_global, name=FALSE) { 
 
@@ -299,7 +299,7 @@ path=paste("'",path_global,"'",sep="")
 
 file=paste("'",paste(name, "_numerical.txt", sep = ""),"'",sep="")
 
-start="/Applications/MATLAB_R2013a_Student.app/bin/matlab -nodisplay -r \"cd('/Users/urszulaczerwinska/Documents/CURIE2015/ICA_Arnau/ICA_script/FastICA_25');"
+start="/Applications/MATLAB_R2013a_Student.app/Contents/MacOS/MATLAB_maci64 -nodisplay -r \"cd('/Users/ulala/Documents/CURIE/ICA_Arnau/ICA_script/FastICA_25');"
 cmd=paste(start," ",fun,"(",path,",",file,",", ncomp,"); quit\"", sep="") 
 
 system(cmd)
@@ -334,8 +334,8 @@ doICA<- function(df.scaled.t, path_global, n, name=FALSE, corr_folder="CORRELATI
   
   dir.create(paste(name,n,sep="_"))
   
-  path_global=paste(path_global,paste(name,n,sep="_"),"/",sep="")
-  setwd(path_global)
+  path_global_1=paste(path_global,paste(name,n,sep="_"),"/",sep="")
+  setwd(path_global_1)
   
   write.table(
     df.scaled.t,
@@ -365,27 +365,27 @@ doICA<- function(df.scaled.t, path_global, n, name=FALSE, corr_folder="CORRELATI
   
   ncomp = n
   
-  path = paste("'",path_global,"'",sep="")
+  path = paste("'",path_global_1,"'",sep="")
   
   file = paste("'",paste(name, "_numerical.txt", sep = ""),"'",sep="")
   
-  start = "/Applications/MATLAB_R2013a_Student.app/bin/matlab -nodisplay -r \"cd('/Users/urszulaczerwinska/Documents/CURIE2015/ICA_Arnau/ICA_script/FastICA_25');"
+  start = "/Applications/MATLAB_R2013a_Student.app/Contents/MacOS/MATLAB_maci64 -nodisplay -r \"cd('/Users/ulala/Documents/CURIE/ICA_Arnau/ICA_script/FastICA_25');"
   cmd = paste(start," ",fun,"(",path,",",file,",", ncomp,"); quit\"", sep="") 
   
   system(cmd)
   a.imp = paste(paste("A",paste(name, "_numerical.txt", sep = ""),ncomp, sep="_"),"num",sep=".")
-  a.imp.path = paste(path_global,a.imp,sep="")
+  a.imp.path = paste(path_global_1,a.imp,sep="")
   A=read.delim(a.imp.path, header=FALSE, sep="\t")
   s.imp = paste(paste("S",paste(name, "_numerical.txt", sep = ""),ncomp, sep="_"),"num",sep=".")
-  s.imp.path = paste(path_global,s.imp,sep="")
+  s.imp.path = paste(path_global_1,s.imp,sep="")
   S=read.delim(s.imp.path, header=FALSE, sep="\t")
   
   ics = paste("IC",c(1:ncomp),sep="")
   colnames(S) = ics
   colnames(A) = ics
   
-  rownames(S) = as.matrix(read.delim(paste(path_global,paste(name, "_ids.txt", sep = ""),sep=""), header=FALSE, sep="\t"))
-  rownames(A) = as.matrix(read.delim(paste(path_global,paste(name, "_samples.txt", sep = ""),sep=""), header=FALSE, sep="\t"))
+  rownames(S) = as.matrix(read.delim(paste(path_global_1,paste(name, "_ids.txt", sep = ""),sep=""), header=FALSE, sep="\t"))
+  rownames(A) = as.matrix(read.delim(paste(path_global_1,paste(name, "_samples.txt", sep = ""),sep=""), header=FALSE, sep="\t"))
   A=A[,1:(ncol(A)-1)]
   S=S[,1:(ncol(S)-1)]
   
@@ -396,7 +396,7 @@ doICA<- function(df.scaled.t, path_global, n, name=FALSE, corr_folder="CORRELATI
   write.table( cbind(HUGO,S), file = paste(path1, paste(name, ncomp,"_S", "xls", sep="."),sep="") , row.names=FALSE, col.names=TRUE, quote= FALSE, sep="\t")
   write.table(data.frame(GENES=rownames(A), A), file = paste(name, ncomp, "full_samples", "txt", sep=".") , row.names=FALSE, col.names=TRUE, quote= FALSE, sep="\t")
   write.table(data.frame(SAMPLES=rownames(S), cbind(S)), file = paste(name,ncomp, "full_genes", "txt", sep=".") , row.names=FALSE, col.names=TRUE, quote= FALSE, sep="\t")
-  
+  generate_rnk_files_for_gsea(list(A,S, HUGO), pos_neg = FALSE, rep="rnk/",path_global,name=paste(name,ncomp,sep=".") )
   return(list(A,S, HUGO))
 }   
 
@@ -405,7 +405,7 @@ doICA<- function(df.scaled.t, path_global, n, name=FALSE, corr_folder="CORRELATI
 
 ```{r test for doICA}
 
-path="/Users/urszulaczerwinska/Documents/CURIE2015/Data/single.cell.melanoma/Average_Profiles/ICA_tirosh_subsets/"
+path="/Users/ulala/Documents/CURIE/Data/single.cell.melanoma/Average_Profiles/ICA_tirosh_subsets/"
 nk.doica=doICA(nk.ica, path , 3)      
 nk.ica.batch=doICABatch(nk.ica, c(2,3,4), path)      
 
@@ -437,6 +437,8 @@ return(get(name.doica))
 
 ```{r change names}
 #vector.of.names=rownames(S)
+#source("https://bioconductor.org/biocLite.R")
+#biocLite("org.Hs.eg.db")
 
 change_to_hugo_official <- function(vector.of.names) {
   rownames.test <- vector.of.names
@@ -445,8 +447,11 @@ change_to_hugo_official <- function(vector.of.names) {
   rownames.test=sub('.', '-', rownames.test, fixed=TRUE)
   rownames.test=sub('.', '-', rownames.test, fixed=TRUE)
   require(org.Hs.eg.db)
+  require(RSQLite)
+
   dbCon <- org.Hs.eg_dbconn()
   # write your SQL query
+  
   sqlQuery <- 'SELECT * FROM alias, gene_info WHERE alias._id == gene_info._id;'
   # execute the query on the database
   aliasSymbol <- dbGetQuery(dbCon, sqlQuery)
@@ -475,22 +480,22 @@ change_to_hugo_official <- function(vector.of.names) {
 repair <- function(name, path_global, ncomp, corr_folder="CORRELATION") {
   name2=paste(name,"_", ncomp, sep="")
 
-  path_global= paste(path_global, name2, "/", sep="")
-  setwd(path_global)
+  path_global_1= paste(path_global, name2, "/", sep="")
+  setwd(path_global_1)
   
   a.imp = paste(paste("A",paste(name, "_numerical.txt", sep = ""),ncomp, sep="_"),"num",sep=".")
-  a.imp.path = paste(path_global,a.imp,sep="")
+  a.imp.path = paste(path_global_1,a.imp,sep="")
   A=read.delim(a.imp.path, header=FALSE, sep="\t")
   s.imp = paste(paste("S",paste(name, "_numerical.txt", sep = ""),ncomp, sep="_"),"num",sep=".")
-  s.imp.path = paste(path_global,s.imp,sep="")
+  s.imp.path = paste(path_global_1,s.imp,sep="")
   S=read.delim(s.imp.path, header=FALSE, sep="\t")
   
   ics = paste("IC",c(1:ncomp),sep="")
   colnames(S) = ics
   colnames(A) = ics
   
-  rownames(S) = as.matrix(read.delim(paste(path_global,paste(name, "_ids.txt", sep = ""),sep=""), header=FALSE, sep="\t"))
-  rownames(A) = as.matrix(read.delim(paste(path_global,paste(name, "_samples.txt", sep = ""),sep=""), header=FALSE, sep="\t"))
+  rownames(S) = as.matrix(read.delim(paste(path_global_1,paste(name, "_ids.txt", sep = ""),sep=""), header=FALSE, sep="\t"))
+  rownames(A) = as.matrix(read.delim(paste(path_global_1,paste(name, "_samples.txt", sep = ""),sep=""), header=FALSE, sep="\t"))
   A=A[,1:(ncol(A)-1)]
   S=S[,1:(ncol(S)-1)]
   
@@ -502,7 +507,7 @@ repair <- function(name, path_global, ncomp, corr_folder="CORRELATION") {
   write.table( cbind(HUGO,S), file = paste(path1, paste(name, ncomp,"_S", "xls", sep="."),sep="") , row.names=FALSE, col.names=TRUE, quote= FALSE, sep="\t")
   write.table(data.frame(GENES=rownames(A), A), file = paste(name, ncomp, "full_samples", "txt", sep=".") , row.names=FALSE, col.names=TRUE, quote= FALSE, sep="\t")
   write.table(data.frame(SAMPLES=rownames(S), cbind(S)), file = paste(name,ncomp, "full_genes", "txt", sep=".") , row.names=FALSE, col.names=TRUE, quote= FALSE, sep="\t")
-  
+  generate_rnk_files_for_gsea(list(A,S, HUGO), pos_neg = FALSE, rep="rnk/",path_global, name=paste(name,ncomp,sep="."))
   return(list(A,S, HUGO))
 }
 ```
@@ -546,63 +551,89 @@ split_ic_pos_neg <- function(df, corr_folder) {
   write.table( cbind(HUGO,S.df.neg), file = paste(path1, paste(name, "neg","_S", "xls", sep="."),sep="") , row.names=FALSE, col.names=TRUE, quote= FALSE, sep="\t")
   write.table( cbind(HUGO,S.df.pos), file = paste(path1, paste(name, "pos","_S", "xls", sep="."),sep="") , row.names=FALSE, col.names=TRUE, quote= FALSE, sep="\t")
   
-return(list(S.df.neg,S.df.pos))
+return(list(S.df.neg,S.df.pos,HUGO))
   
 }
 
-#S_pos_neg_nk=split_ic_pos_neg(nk.doica, corr_folder="CORRELTION_POS_NEG")
+S_pos_neg_nk=split_ic_pos_neg(nk.doica, corr_folder="CORRELTION_POS_NEG")
 
 ```
 
 ```{r generate .rnk files}
-generate_rnk_files_for_gsea <- function (df, pos_neg = FALSE, rep) {
-  name <- deparse(substitute(df))
+generate_rnk_files_for_gsea <- function (df, pos_neg = FALSE, rep,path_global, name=deparse(substitute(df))) {
+  dir.create(paste(path_global,rep,sep="") )
   HUGO <- df[[3]]
-  S <- df[[2]]
   if (pos_neg == FALSE) {
-  apply(
+  S <- df[[2]]
+  sapply(
   1:ncol(S),
-  2,
   function(x) write.table(
   data.frame(HUGO, S[, x]),
-  file = paste(rep, colnames(S)[x], "/", sep = ""),
+  file = paste(path_global,rep,name,".", colnames(S)[x], ".rnk", sep = ""),
   quote = FALSE,
   col.names = FALSE,
   row.names = FALSE
   )
   )
   } else {
-  
-  }
-  
-}
-```
-
-```{r}
-setwd(path_global)
-df=nk.doica
-name <- deparse(substitute(df))
-rep="test_rnk/"
-  dir.create("test_rnk/")  
-
-  HUGO <- df[[3]]
-  S <- df[[2]]
+  S.neg <- df[[1]]
+  S.pos <- df[[2]]
+  S_pos_neg_nk[[1]][which(S_pos_neg_nk[[1]][,1] != "N/A"),1,drop=FALSE]
   sapply(
-  1:ncol(S),
+  1:ncol(S.neg),
   function(x) write.table(
-  data.frame(HUGO, S[, x]),
-  file = paste(path_global,rep, colnames(S)[x], ".rnk", sep = ""),
+  data.frame(HUGO[which(S.neg[,x] != "N/A")], S.neg[which(S.neg[,x] != "N/A"), x]),
+  file = paste(path_global,rep,name,".neg.", colnames(S.neg)[x], ".rnk", sep = ""),
   quote = FALSE,
   col.names = FALSE,
   row.names = FALSE
   )
   )
+  sapply(
+  1:ncol(S.pos),
+  function(x) write.table(
+  data.frame(HUGO[which(S.pos[,x] != "N/A")], S.pos[which(S.pos[,x] != "N/A"), x]),
+  file = paste(path_global,rep,name,".pos.", colnames(S.pos)[x], ".rnk", sep = ""),
+  quote = FALSE,
+  col.names = FALSE,
+  row.names = FALSE
+  )
+  )  
+  } 
+  
+}
+```
+```{r}
+#generate_rnk_files_for_gsea(nk.doica,rep="rnk/",path_global="/Users/urszulaczerwinska/Documents/CURIE2015/Data/single.cell.melanoma/Average_Profiles/ICA_tirosh_subsets/")
+```
+
+```{r}
+# setwd(path_global)
+# df=nk.doica
+# name <- deparse(substitute(df))
+# rep="test_rnk/"
+#   dir.create("test_rnk/")  
+# 
+#   HUGO <- df[[3]]
+#   S <- df[[2]]
+#   sapply(
+#   1:ncol(S),
+#   function(x) write.table(
+#   data.frame(HUGO, S[, x]),
+#   file = paste(path_global,rep,name, colnames(S)[x], ".rnk", sep = ""),
+#   quote = FALSE,
+#   col.names = FALSE,
+#   row.names = FALSE
+#   )
+#   )
 
   
 ```
 
 
 ```{r}
-paste(path_global,rep, colnames(S)[1], ".rnk", sep = "")
+#paste(path_global,rep, colnames(S)[1], ".rnk", sep = "")
+#S_pos_neg_nk[[1]][which(S_pos_neg_nk[[1]][,1] != "N/A"),1,drop=FALSE]
+generate_rnk_files_for_gsea(S_pos_neg_nk, pos_neg = TRUE, rep="rnk_pos_neg/",path_global="/Users/urszulaczerwinska/Documents/CURIE2015/Data/single.cell.melanoma/Average_Profiles/ICA_tirosh_subsets/") 
 ```
 
