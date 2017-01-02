@@ -595,6 +595,7 @@ generate_rnk_files_for_gsea <- function (df, pos_neg = FALSE, rep,path_global, n
   data.frame(HUGO[which(S.pos[,x] != "N/A")], S.pos[which(S.pos[,x] != "N/A"), x]),
   file = paste(path_global,rep,name,".pos.", colnames(S.pos)[x], ".rnk", sep = ""),
   quote = FALSE,
+  sep = "\t",
   col.names = FALSE,
   row.names = FALSE
   )
