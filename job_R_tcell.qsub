@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -q batch
+#PBS -l walltime=400:00:00
+#PBS -l mem=20gb
+#PBS -M ulcia.liberte@gmail.com
+
+cd $PBS_O_WORKDIR
+
+
+/bioinfo/local/build/R/R-3.3.2_centos/bin/Rscript SCDE_centos.R 
+
