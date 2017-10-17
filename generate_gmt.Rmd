@@ -1,0 +1,62 @@
+---
+title: "Generate GMT with weights"
+output: html_notebook
+---
+
+```{r import ICA .rnk}
+IC = read.table("/Users/ulala/Documents/CURIE/Data/Tatiana_TCGA/ADIPOSE.rnk", sep= "\t", stringsAsFactors = FALSE, header = FALSE)
+
+paste(IC[,1], "[",IC[,2],"]", sep= "")
+name ="ADIPOSE"
+st = paste(name, " na ", sep="")
+cbind(st ,t(paste(IC[,1], "[",IC[,2],"]", sep= "")))
+write.table( cbind(st ,t(paste(IC[,1], "[",IC[,2],"]", sep= ""))),
+                  "/Users/ulala/Documents/CURIE/Data/Tatiana_TCGA/Biton.gmt",quote= FALSE, sep = "\t",row.names= FALSE, col.names = FALSE, append = TRUE )
+
+
+
+```
+
+
+```{r import ICA .rnk function }
+
+path_file <- "/Users/ulala/Documents/CURIE/Data/Tatiana_TCGA/ADIPOSE.rnk"
+name <- "ADIPOSE"
+
+
+make_gmt_weighted <- function(path_file, name){
+
+IC = read.table(path_file, sep= "\t", stringsAsFactors = FALSE, header = FALSE)
+
+paste(IC[,1], "[",IC[,2],"]", sep= "")
+
+
+cbind(name ,t(paste(IC[,1], "[",IC[,2],"]", sep= "")))
+write.table( cbind(st ,t(paste(IC[,1], "[",IC[,2],"]", sep= ""))),
+                  "/Users/ulala/Documents/CURIE/Data/Tatiana_TCGA/Biton.gmt",quote= FALSE, sep = "\t",row.names= FALSE, col.names = FALSE, append = TRUE )
+
+}
+```
+```{r}
+make_gmt_weighted ("/Users/ulala/Documents/CURIE/Data/Tatiana_TCGA/ADIPOSE.rnk",name = "ADIPOSE")
+
+make_gmt_weighted ("/Users/ulala/Documents/CURIE/Data/Tatiana_TCGA/immune_metagene",name = "IMMUNE")
+
+make_gmt_weighted ("/Users/ulala/Documents/CURIE/BIODICA-master/knowledge/metagenes/M7_CELLCYCLE.rnk",name = "CELL_CYCLE")
+make_gmt_weighted ("/Users/ulala/Documents/CURIE/Data/Tatiana_TCGA/immune_metagene",name = "IMMUNE")
+make_gmt_weighted ("/Users/ulala/Documents/CURIE/Data/Tatiana_TCGA/immune_metagene",name = "IMMUNE")
+
+```
+
+```{r}
+ library(readxl)
+ImSig <- read_excel("~/Documents/CURIE/signatures/ImSig.xlsx", sheet = "Feuil1")
+head(ImSig )
+
+table(ImSig$`ImSig cell type`)
+for (level in levels(ImSig$`ImSig cell type`)){
+  df = subset(ImSig,`ImSig cell type` == level )
+}
+
+```
+

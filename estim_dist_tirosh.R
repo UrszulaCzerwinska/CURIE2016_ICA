@@ -87,8 +87,10 @@ write.table(t_cells.t, "/Users/ulala/Documents/CURIE/Data/single.cell.melanoma/A
 
 df.t.unlog=nk.t.unlog[1:100,]
 i=17
+
+####function 
 estimate_negative_bin_parameters <- function(df) {
-  #df=caf
+#df=caf
   require(fitdistrplus)
   require(gamlss)
   df.t <- data.frame(t(df[, 5:ncol(df)]))
@@ -135,3 +137,94 @@ endothelial_cells_nbin_params = estimate_negative_bin_parameters(endothelial_cel
 tumor_cells_nbin_params = estimate_negative_bin_parameters(tumor_cells)
 nk_nbin_params = estimate_negative_bin_parameters(nk)
 
+#
+
+j <- 10
+sin_cell_data=caf_nbin_params
+sampling_sing_cell <- function ( j, sin_cell_data) {
+  i <- length(sin_cell_data)
+  my_data <-  matrix(data = NA, nrow = i, ncol = j, byrow = TRUE)
+  
+  for (l in 1:i){
+    my_data[l,] = rnbinom(j, size = sin_cell_data[[l]][[1]], mu = sin_cell_data[[l]][[2]])
+    
+    
+  }
+ # my_data[is.nan(my_data)] <- 0
+  
+  return(my_data)
+}
+
+hist(my_data[2,])
+
+#simulate 500 caf cells 
+cells_caf_sim <- sampling_sing_cell(500, caf_nbin_params )
+df <- cells_caf_sim 
+
+row.na <- apply(df, 1, function(X) any(is.nan(X)))
+cells_caf_sim.non <- cells_caf_sim[!row.na,]
+dim(cells_caf_sim.non)
+#compute spectrum: eigen vectors and values
+
+#mini function to transpose data
+compute_trans_cell_type <- function(df) {
+df.t <- data.frame(t(df[, 5:ncol(df)]))
+colnames(df.t) <- df[, 1] 
+return(df.t) }
+#minifunction to unlog data
+unlog_data <- function(df.t) {
+  df.t.unlog <-
+  data.frame(apply(df.t, 2, function(x)
+    as.integer(exp(x) - 1)))
+row.names(df.t.unlog) <- row.names(df.t)
+return(df.t.unlog)
+}
+#covarance of real and simulated data without NaN rows
+cov_cafs_sim <- cov(t(log1p(cells_caf_sim[!row.na,])))
+cov_cafs <- cov(t(compute_trans_cell_type(caf)[!row.na,]))
+
+dim(cov_cafs_sim )
+dim(cov_cafs)
+
+# compute_trans_cell_type(caf)[!row.na,][1:10,1:10]
+# log1p(cells_caf_sim[!row.na,])[1:10,1:10]
+# head(cov_cafs_sim[,1:10] )
+# head(cov_cafs[,1:10])
+#install package for big eigen values computation
+#install.packages("RSpectra")
+library("RSpectra")
+#eigen of both
+eigen_caf_sim <-eigs_sym(cov_cafs_sim, 100)
+eigen_cafs <-eigs_sym(cov_cafs,100)
+
+hist(eigen_cafs$values,100)
+hist(eigen_caf_sim$values,100)
+
+head(eigen_cafs$values)
+head(eigen_caf_sim$values)
+
+#try with tcells
+#simulate 500 tcell cells 
+cells_tcell_sim <- sampling_sing_cell(2040 , t_cells_nbin_params )
+df <- cells_tcell_sim 
+
+row.na <- apply(df, 1, function(X) any(is.nan(X)))
+
+#cov
+cov_tcell_sim <- cov(t(log1p(cells_tcell_sim [!row.na,])))
+cov_tcell <- cov(t(compute_trans_cell_type(t_cells)[!row.na,]))
+
+dim(cov_tcell_sim)
+dim(cov_tcell)
+
+#eigen of both
+eigen_tcell_sim <-eigs_sym(cov_tcell_sim, 100)
+eigen_tcell <-eigs_sym(cov_tcell,100)
+
+barplot(eigen_tcell$values, main= "eigenvalues t_cells")
+barplot(eigen_tcell_sim$values,  main= "eigenvalues t_cells simul")
+
+eigen_tcell$vectors[,1]
+eigen_tcell_sim$vectors[,1]
+dist(rbind(eigen_tcell$vectors[,1],eigen_tcell_sim$vectors[,1]))^2
+plot(eigen_tcell$vectors[,2], eigen_tcell_sim$vectors[,2], pch=16)

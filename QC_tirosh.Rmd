@@ -1,4 +1,3 @@
----
 title: "QC Tirosh et al."
 output: html_notebook
 ---
@@ -18,7 +17,50 @@ load("~/Documents/CURIE2015/R_code/miunimal_melanoma.RData")
 #non-malignant cell type (1=T,2=B,3=Macro.4=Endo.,5=CAF;6=NK)
 GSE72056_melanoma_single_cell.w[1:10,1:10] #samples in columns
 GSE72056_melanoma_single_cell.w.t[1:10,1:10] #samples in rows
+
 ```
+
+```{r}
+length(table(GSE72056_melanoma_single_cell.w.t$tumor))
+
+table(GSE72056_melanoma_single_cell.w.t$malignant)
+table(GSE72056_melanoma_single_cell.w.t$cell_type)
+GSE72056_melanoma_single_cell.w.t$cell_type <- as.factor(GSE72056_melanoma_single_cell.w.t$cell_type)
+levels(GSE72056_melanoma_single_cell.w.t$cell_type) <- c("unknown","T","B","Macro", "Endo","CAF", "NK")
+ncol(GSE72056_melanoma_single_cell.w)
+length(GSE72056_melanoma_single_cell.w.t$cell_type )
+
+setwd("/Users/ulala/Documents/CURIE/Data/single.cell.melanoma/TiroshvsBulk/GSE72056_melanoma_single_cell.num.cen_100")
+name <- "GSE72056"
+write.table(
+    GSE72056_melanoma_single_cell.w.t$cell_type,
+    file = paste(name, "_labels.txt", sep = ""),
+    col.names = FALSE,
+    row.names = FALSE,
+    quote = FALSE,
+    sep="\t"
+  )
+  
+```
+
+```{r}
+library("caret")
+A_GSE72056_melanoma_single_cell_num_cen_numerical_txt_100 <-
+  read_delim(
+  "~/Documents/CURIE/Data/single.cell.melanoma/TiroshvsBulk/GSE72056_melanoma_single_cell.num.cen_100/A_GSE72056_melanoma_single_cell.num.cen_numerical.txt_100.num",
+  "\t",
+  escape_double = FALSE,
+  col_names = FALSE,
+  col_types = cols(X101 = col_skip()),
+  trim_ws = TRUE
+  )
+featurePlot(x = A_GSE72056_melanoma_single_cell_num_cen_numerical_txt_100[, c(55,97,92,13,60,22,13, 44)], 
+            y = GSE72056_melanoma_single_cell.w.t$cell_type, 
+            plot = "density", 
+            layout = c(4,2 ), 
+            auto.key = list(columns = 2))
+```
+
 
 ```{r data split into subsets (labelled)}
 require(dplyr)
@@ -72,9 +114,11 @@ require(dplyr)
   dim(undef)
   
 ```
+
 ```{r counts plot function}
 
 counts_plot <- function(i, ret = FALSE) {
+  require(reshape)
   title <- deparse(substitute(i))
   
   mymatrix <- matrix(nrow = dim(i)[1], ncol = 100)
@@ -92,7 +136,7 @@ counts_plot <- function(i, ret = FALSE) {
   data.tmp = data.frame(cell = i$rowname, mymatrix)
   colnames(data.tmp) = c("cell", as.character(seq(0, 3.96, 0.04)))
   require(reshape2)
-  data.tmp.long = melt(data.tmp, id = c("cell"), variable.name = "Threshold")
+  data.tmp.long = reshape2:::melt.data.frame(data.tmp, id = c("cell"), variable.name = "Threshold")
   data.tmp.long$Threshold = as.numeric(data.tmp.long$Threshold)
   
   require(ggplot2)
@@ -106,6 +150,7 @@ counts_plot <- function(i, ret = FALSE) {
   
   rm(i)
   
+
   ggsave(paste(title, ".pdf", sep = ""), pl)
   
   if (ret == TRUE) {
@@ -289,7 +334,8 @@ setwd(path_global)
   file = paste(name, "_numerical.txt", sep = ""),
   col.names = FALSE,
   row.names = FALSE,
-  quote = FALSE
+  quote = FALSE,
+  sep="\t"
   )
  
 fun="doICABatch"
@@ -342,7 +388,8 @@ doICA<- function(df.scaled.t, path_global, n, name=FALSE, corr_folder="CORRELATI
     file = paste(name, "_numerical.txt", sep = ""),
     col.names = FALSE,
     row.names = FALSE,
-    quote = FALSE
+    quote = FALSE,
+    sep="\t"
   )
   
   write.table(
@@ -369,7 +416,7 @@ doICA<- function(df.scaled.t, path_global, n, name=FALSE, corr_folder="CORRELATI
   
   file = paste("'",paste(name, "_numerical.txt", sep = ""),"'",sep="")
   
-  start = "/Applications/MATLAB_R2013a_Student.app/Contents/MacOS/MATLAB_maci64 -nodisplay -r \"cd('/Users/ulala/Documents/CURIE/ICA_Arnau/ICA_script/FastICA_25');"
+  start = "/Applications/MATLAB_R2016a.app/Contents/MacOS/MATLAB_maci64 -nodisplay -r \"cd('/Users/ulala/Documents/CURIE/ICA_Arnau/ICA_script/FastICA_25');"
   cmd = paste(start," ",fun,"(",path,",",file,",", ncomp,"); quit\"", sep="") 
   
   system(cmd)

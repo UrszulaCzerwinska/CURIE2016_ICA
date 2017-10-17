@@ -1,0 +1,36 @@
+---
+title: "MCPcounter"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r install package, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+install.packages("devtools","curl") ##Installs devtools and the MCPcounter dependancy 'curl'
+library(devtools)
+install_github("ebecht/MCPcounter",ref="master", subdir="Source")
+```
+## import package
+```{r import package}
+library(MCPcounter)
+
+```
+## look at the MCPcounter function
+```{r look at the MCPcounter function}
+?MCPcounter.estimate
+```
+## import dataset
+```{r import dataset}
+#importing ovarian cancer TCGA 
+OVCA <- read.csv("~/Documents/CURIE/BIODICA-master/data/OVCA_TCGA/transcriptome/OVCA.txt", row.names=1, sep="", stringsAsFactors=FALSE)
+head(OVCA[,1:10]) #first 10 samples
+summary(OVCA)[,1:10] #check 
+```
+# execute "MCPcounter.estimate"
+```{r execute, echo=TRUE}
+estimation.ovca <- MCPcounter.estimate(OVCA ,featuresType=c("HUGO_symbols"))
+estimation.ovca[,1:10] #restults for 10 first samples 
+```
+

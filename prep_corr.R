@@ -118,3 +118,8 @@ for (i in list(S_pos_neg_nk,S_pos_neg_caf,S_pos_neg_b_cells,S_pos_neg_t_cells,S_
   
 }
 lapply(names(list_1),function(x) generate_rnk_files_for_gsea(list_1[[x]], pos_neg = TRUE, rep="rnk/", path_global, name=x))
+
+vec <- c(1:2, 4:20)
+for (i in vec){
+  repair(paste("METABRIC_0.9", i,sep="_"), "/Users/ulala/Documents/CURIE/Data/breast_cancer_6datasets_ICA/UC/technical/rob_90per_100", 100, corr_folder="CORRELATION")
+}
